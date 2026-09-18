@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppearanceMenu from '@/components/AppearanceMenu.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem } from '@/types';
@@ -22,6 +23,9 @@ withDefaults(
             <template v-if="breadcrumbs && breadcrumbs.length > 0">
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </template>
+        </div>
+        <div class="ml-auto shrink-0">
+            <AppearanceMenu />
         </div>
     </header>
 </template>

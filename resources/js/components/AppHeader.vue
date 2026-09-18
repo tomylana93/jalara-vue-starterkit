@@ -4,6 +4,7 @@ import { useTrans } from '@/composables/useTrans';
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from '@lucide/vue';
 import { computed } from 'vue';
+import AppearanceMenu from '@/components/AppearanceMenu.vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -191,7 +192,8 @@ const rightNavItems = computed(() => [
                     </NavigationMenu>
                 </div>
 
-                <div class="ml-auto flex items-center space-x-2">
+                <div class="ml-auto flex items-center gap-2">
+                    <AppearanceMenu />
                     <div class="relative flex items-center space-x-1">
                         <Button
                             variant="ghost"

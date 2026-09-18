@@ -42,7 +42,7 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                 'auth/TwoFactorChallenge',
                 'authentication.heading.authentication_code',
             ],
-            ['settings/Appearance', 'appearance.heading.settings'],
+            ['Dashboard', 'navigation.label.dashboard'],
             ['settings/Profile', 'profile.heading.settings'],
             ['settings/Security', 'security.heading.update_password'],
         ]) {
@@ -86,6 +86,33 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                 `${locale} ${component} must render ${expected}`,
             );
             assert.ok(result.head.join('').includes('Jalara'));
+
+            const appearanceLabel =
+                messages[locale].appearance.heading.settings;
+            const appearanceButtons = [
+                ...result.body.matchAll(/<button\b[^>]*>/g),
+            ].filter(([button]) =>
+                button.includes(`aria-label="${appearanceLabel}"`),
+            );
+            assert.equal(
+                appearanceButtons.length,
+                1,
+                `${locale} ${component} must render one appearance button`,
+            );
+            const headers = [
+                ...result.body.matchAll(/<header\b[^>]*>[\s\S]*?<\/header>/g),
+            ];
+            assert.ok(
+                headers.some(([header]) =>
+                    header.includes(`aria-label="${appearanceLabel}"`),
+                ),
+                component,
+            );
+            assert.doesNotMatch(
+                result.body,
+                /href="[^"]*settings\/appearance/,
+                component,
+            );
 
             for (const [form] of result.body.matchAll(/<form\b[^>]*>/g)) {
                 assert.match(form, /\bnovalidate(?:\s|=|>)/, component);
