@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AuthLayout from '@/layouts/auth/AuthSimpleLayout.vue';
+import AuthLayout from '@/layouts/auth/AuthSplitLayout.vue';
 import { useTrans } from '@/composables/useTrans';
 import type { TextMessageKey } from '@/types';
 const { trans } = useTrans();
