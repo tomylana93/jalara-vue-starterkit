@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Override;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Override;
 
 class HandleInertiaRequests extends Middleware
 {

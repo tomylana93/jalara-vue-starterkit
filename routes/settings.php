@@ -26,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::inertia('settings/appearance', 'settings/Appearance')->name('appearance.edit');
 });
 
-Route::get('.well-known/passkey-endpoints', fn() => response()->json([
+Route::get('.well-known/passkey-endpoints', fn () => response()->json([
     'enroll' => route('security.edit'),
     'manage' => route('security.edit'),
 ]))->name('well-known.passkeys');
