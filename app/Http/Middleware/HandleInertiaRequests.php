@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Override;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -14,6 +15,7 @@ class HandleInertiaRequests extends Middleware
      *
      * @var string
      */
+    #[Override]
     protected $rootView = 'app';
 
     /**
