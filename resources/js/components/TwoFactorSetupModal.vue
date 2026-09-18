@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import { Form } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from '@lucide/vue';
@@ -24,6 +26,7 @@ import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
 
+const { trans } = useTrans();
 type Props = {
     requiresConfirmation: boolean;
     twoFactorEnabled: boolean;
@@ -46,26 +49,26 @@ const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 const modalConfig = computed<TwoFactorConfigContent>(() => {
     if (props.twoFactorEnabled) {
         return {
-            title: 'Two-factor authentication enabled',
-            description:
-                'Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.',
-            buttonText: 'Close',
+            title: trans('security.heading.two_factor_enabled'),
+            description: trans(
+                'security.description.two_factor_setup_complete',
+            ),
+            buttonText: trans('common.button.close'),
         };
     }
 
     if (showVerificationStep.value) {
         return {
-            title: 'Verify authentication code',
-            description: 'Enter the 6-digit code from your authenticator app',
-            buttonText: 'Continue',
+            title: trans('security.heading.verify_code'),
+            description: trans('security.description.verify_code'),
+            buttonText: trans('common.button.continue'),
         };
     }
 
     return {
-        title: 'Enable two-factor authentication',
-        description:
-            'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app',
-        buttonText: 'Continue',
+        title: trans('security.heading.enable_two_factor'),
+        description: trans('security.description.enable_two_factor'),
+        buttonText: trans('common.button.continue'),
     };
 });
 
@@ -196,9 +199,9 @@ watch(
                             <div
                                 class="bg-border absolute inset-0 top-1/2 h-px w-full"
                             />
-                            <span class="bg-card relative px-2 py-1"
-                                >or, enter the code manually</span
-                            >
+                            <span class="bg-card relative px-2 py-1">
+                                {{ trans('security.link.manual_code') }}
+                            </span>
                         </div>
 
                         <div
@@ -279,14 +282,14 @@ watch(
                                     @click="showVerificationStep = false"
                                     :disabled="processing"
                                 >
-                                    Back
+                                    {{ trans('common.button.back') }}
                                 </Button>
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
                                     :disabled="processing || code.length < 6"
                                 >
-                                    Confirm
+                                    {{ trans('common.button.confirm') }}
                                 </Button>
                             </div>
                         </div>

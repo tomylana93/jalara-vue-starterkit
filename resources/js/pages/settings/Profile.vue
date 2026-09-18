@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -12,11 +14,12 @@ import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 
+const { trans } = useTrans();
 defineOptions({
     layout: {
-        breadcrumbs: [
+        breadcrumbKeys: [
             {
-                title: 'Profile settings',
+                titleKey: 'profile.heading.settings',
                 href: edit(),
             },
         ],
@@ -28,15 +31,15 @@ const user = computed(() => page.props.auth.user);
 </script>
 
 <template>
-    <Head title="Profile settings" />
+    <Head :title="trans('profile.heading.settings')" />
 
-    <h1 class="sr-only">Profile settings</h1>
+    <h1 class="sr-only">{{ trans('profile.heading.settings') }}</h1>
 
     <div class="flex flex-col space-y-6">
         <Heading
             variant="small"
-            title="Profile"
-            description="Update your name and email address"
+            :title="trans('navigation.label.profile')"
+            :description="trans('profile.description.settings')"
         />
 
         <Form
@@ -45,7 +48,9 @@ const user = computed(() => page.props.auth.user);
             v-slot="{ errors, processing }"
         >
             <div class="grid gap-2">
-                <Label for="name">Name</Label>
+                <Label for="name">
+                    {{ trans('authentication.label.name') }}
+                </Label>
                 <Input
                     id="name"
                     class="mt-1 block w-full"
@@ -53,13 +58,15 @@ const user = computed(() => page.props.auth.user);
                     :default-value="user.name"
                     required
                     autocomplete="name"
-                    placeholder="Full name"
+                    :placeholder="trans('authentication.placeholder.full_name')"
                 />
                 <InputError class="mt-2" :message="errors.name" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email">
+                    {{ trans('authentication.label.email_address') }}
+                </Label>
                 <Input
                     id="email"
                     type="email"
@@ -68,20 +75,20 @@ const user = computed(() => page.props.auth.user);
                     :default-value="user.email"
                     required
                     autocomplete="username"
-                    placeholder="Email address"
+                    :placeholder="trans('authentication.label.email_address')"
                 />
                 <InputError class="mt-2" :message="errors.email" />
             </div>
 
             <div v-if="page.props.mustVerifyEmail && !user.email_verified_at">
                 <p class="text-muted-foreground -mt-4 text-sm">
-                    Your email address is unverified.
+                    {{ trans('profile.message.email_unverified') }}
                     <Link
                         :href="send()"
                         as="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                     >
-                        Click here to re-send the verification email.
+                        {{ trans('profile.link.resend_verification') }}
                     </Link>
                 </p>
 
@@ -89,14 +96,17 @@ const user = computed(() => page.props.auth.user);
                     v-if="page.props.status === 'verification-link-sent'"
                     class="mt-2 text-sm font-medium text-green-600"
                 >
-                    A new verification link has been sent to your email address.
+                    {{ trans('profile.message.verification_sent') }}
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <Button :disabled="processing" data-test="update-profile-button"
-                    >Save</Button
+                <Button
+                    :disabled="processing"
+                    data-test="update-profile-button"
                 >
+                    {{ trans('common.button.save') }}
+                </Button>
             </div>
         </Form>
     </div>

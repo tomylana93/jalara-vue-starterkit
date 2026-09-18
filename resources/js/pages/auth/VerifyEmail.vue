@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import { Form, Head } from '@inertiajs/vue3';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -6,11 +8,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 
+const { trans } = useTrans();
 defineOptions({
     layout: {
-        title: 'Email verification',
-        description:
-            'Please verify your email address by clicking on the link we just emailed to you.',
+        titleKey: 'authentication.heading.verify_email',
+        descriptionKey: 'authentication.description.verify_email',
     },
 });
 
@@ -20,14 +22,13 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Email verification" />
+    <Head :title="trans('authentication.heading.verify_email')" />
 
     <div
         v-if="status === 'verification-link-sent'"
         class="mb-4 text-center text-sm font-medium text-green-600"
     >
-        A new verification link has been sent to the email address you provided
-        during registration.
+        {{ trans('authentication.message.verification_sent') }}
     </div>
 
     <Form
@@ -37,11 +38,11 @@ defineProps<{
     >
         <Button :disabled="processing" variant="secondary">
             <Spinner v-if="processing" />
-            Resend verification email
+            {{ trans('authentication.button.resend_verification') }}
         </Button>
 
         <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
-            Log out
+            {{ trans('navigation.button.logout') }}
         </TextLink>
     </Form>
 </template>

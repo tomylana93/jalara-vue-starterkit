@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import { Link } from '@inertiajs/vue3';
 import {
     SidebarGroup,
@@ -10,6 +12,7 @@ import {
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import type { NavItem } from '@/types';
 
+const { trans } = useTrans();
 defineProps<{
     items: NavItem[];
 }>();
@@ -19,7 +22,9 @@ const { isCurrentUrl } = useCurrentUrl();
 
 <template>
     <SidebarGroup class="px-2 py-0">
-        <SidebarGroupLabel>Platform</SidebarGroupLabel>
+        <SidebarGroupLabel>
+            {{ trans('navigation.label.platform') }}
+        </SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
                 <SidebarMenuButton

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import type { UrlMethodPair } from '@inertiajs/core';
 import { router } from '@inertiajs/vue3';
 import { usePasskeyVerify } from '@laravel/passkeys/vue';
@@ -8,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 
+const { trans } = useTrans();
 type Props = {
     routes?: {
         options: UrlMethodPair;
@@ -49,8 +52,10 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
                 <KeyRound v-else class="h-4 w-4" />
                 {{
                     isLoading
-                        ? (props.loadingLabel ?? 'Authenticating...')
-                        : (props.label ?? 'Sign in with a passkey')
+                        ? (props.loadingLabel ??
+                          trans('security.label.authenticating'))
+                        : (props.label ??
+                          trans('security.button.signin_passkey'))
                 }}
             </Button>
 
@@ -65,7 +70,10 @@ const { verify, isLoading, error, isSupported } = usePasskeyVerify({
             </div>
             <div class="relative flex justify-center text-xs uppercase">
                 <span class="bg-background text-muted-foreground px-2">
-                    {{ props.separator ?? 'Or continue with email' }}
+                    {{
+                        props.separator ??
+                        trans('security.description.signin_alternative')
+                    }}
                 </span>
             </div>
         </div>

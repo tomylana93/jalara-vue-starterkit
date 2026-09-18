@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import { router } from '@inertiajs/vue3';
 import { KeyRound } from '@lucide/vue';
 import type { Passkey } from '@/types/auth';
@@ -7,6 +9,7 @@ import PasskeyItem from '@/components/PasskeyItem.vue';
 import PasskeyRegister from '@/components/PasskeyRegister.vue';
 import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegistrationController';
 
+const { trans } = useTrans();
 export type Props = {
     canManagePasskeys?: boolean;
     passkeys?: Passkey[];
@@ -33,8 +36,8 @@ const handleRegisterSuccess = () => {
     <div v-if="canManagePasskeys" class="space-y-6">
         <Heading
             variant="small"
-            title="Passkeys"
-            description="Manage your passkeys for passwordless sign-in"
+            :title="trans('security.heading.passkeys')"
+            :description="trans('security.description.passkeys')"
         />
 
         <div class="border-border overflow-hidden rounded-lg border">
@@ -53,9 +56,11 @@ const handleRegisterSuccess = () => {
                 >
                     <KeyRound class="text-muted-foreground h-7 w-7" />
                 </div>
-                <p class="font-medium">No passkeys yet</p>
+                <p class="font-medium">
+                    {{ trans('security.heading.no_passkeys') }}
+                </p>
                 <p class="text-muted-foreground mt-1 text-sm">
-                    Add a passkey to sign in without a password
+                    {{ trans('security.description.no_passkeys') }}
                 </p>
             </div>
         </div>

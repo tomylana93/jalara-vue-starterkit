@@ -1,4 +1,5 @@
 import { useHttp } from '@inertiajs/vue3';
+import { useTrans } from '@/composables/useTrans';
 import type { ComputedRef, Ref } from 'vue';
 import { computed, ref } from 'vue';
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
@@ -28,6 +29,7 @@ const hasSetupData = computed<boolean>(
 );
 
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
+    const { trans } = useTrans();
     const http = useHttp();
 
     const fetchQrCode = async (): Promise<void> => {
@@ -39,7 +41,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
             qrCodeSvg.value = svg;
         } catch {
-            errors.value.push('Failed to fetch QR code');
+            errors.value.push(trans('security.message.qr_failed'));
             qrCodeSvg.value = null;
         }
     };
@@ -52,7 +54,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
             manualSetupKey.value = key;
         } catch {
-            errors.value.push('Failed to fetch a setup key');
+            errors.value.push(trans('security.message.setup_key_failed'));
             manualSetupKey.value = null;
         }
     };
@@ -80,7 +82,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
                 recoveryCodes(),
             )) as string[];
         } catch {
-            errors.value.push('Failed to fetch recovery codes');
+            errors.value.push(trans('security.message.recovery_codes_failed'));
             recoveryCodesList.value = [];
         }
     };

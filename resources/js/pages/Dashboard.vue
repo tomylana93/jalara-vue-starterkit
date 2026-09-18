@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import { dashboard } from '@/routes';
 
+const { trans } = useTrans();
 defineOptions({
     layout: {
-        breadcrumbs: [
+        breadcrumbKeys: [
             {
-                title: 'Dashboard',
+                titleKey: 'dashboard.heading.index',
                 href: dashboard(),
             },
         ],
@@ -16,7 +19,7 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head :title="trans('dashboard.heading.index')" />
 
     <div
         class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"

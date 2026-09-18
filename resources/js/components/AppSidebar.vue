@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useTrans } from '@/composables/useTrans';
+
 import { Link } from '@inertiajs/vue3';
 import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
@@ -17,26 +20,27 @@ import {
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
+const { trans } = useTrans();
+const mainNavItems = computed(() => [
     {
-        title: 'Dashboard',
+        title: trans('dashboard.heading.index'),
         href: dashboard(),
         icon: LayoutGrid,
     },
-];
+]);
 
-const footerNavItems: NavItem[] = [
+const footerNavItems = computed(() => [
     {
-        title: 'Repository',
+        title: trans('navigation.label.repository'),
         href: 'https://github.com/laravel/vue-starter-kit',
         icon: FolderGit2,
     },
     {
-        title: 'Documentation',
+        title: trans('navigation.label.documentation'),
         href: 'https://laravel.com/docs/starter-kits#vue',
         icon: BookOpen,
     },
-];
+]);
 </script>
 
 <template>

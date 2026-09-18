@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useTrans } from '@/composables/useTrans';
+
 import { Form, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -9,10 +11,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
 
+const { trans } = useTrans();
 defineOptions({
     layout: {
-        title: 'Forgot password',
-        description: 'Enter your email to receive a password reset link',
+        titleKey: 'authentication.heading.forgot_password',
+        descriptionKey: 'authentication.description.forgot_password',
     },
 });
 
@@ -22,7 +25,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Forgot password" />
+    <Head :title="trans('authentication.heading.forgot_password')" />
 
     <div
         v-if="status"
@@ -34,7 +37,9 @@ defineProps<{
     <div class="space-y-6">
         <Form v-bind="email.form()" v-slot="{ errors, processing }">
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email">
+                    {{ trans('authentication.label.email_address') }}
+                </Label>
                 <Input
                     id="email"
                     type="email"
@@ -53,14 +58,16 @@ defineProps<{
                     data-test="email-password-reset-link-button"
                 >
                     <Spinner v-if="processing" />
-                    Email password reset link
+                    {{ trans('authentication.button.email_reset_link') }}
                 </Button>
             </div>
         </Form>
 
         <div class="text-muted-foreground space-x-1 text-center text-sm">
-            <span>Or, return to</span>
-            <TextLink :href="login()">log in</TextLink>
+            <span> {{ trans('authentication.link.return_login') }} </span>
+            <TextLink :href="login()">
+                {{ trans('authentication.button.login') }}
+            </TextLink>
         </div>
     </div>
 </template>
