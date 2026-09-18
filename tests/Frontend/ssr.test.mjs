@@ -68,6 +68,18 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                     token: 'reset-token',
                     canManagePasskeys: true,
                     passkeys: [],
+                    avatarMedia:
+                        component === 'settings/Profile'
+                            ? {
+                                  id: '1',
+                                  name: 'saved-avatar.png',
+                                  mimeType: 'image/png',
+                                  sizeBytes: 1536,
+                                  url: '/storage/1/saved-avatar.png',
+                                  thumbnailUrl:
+                                      '/storage/1/conversions/saved-avatar-thumbnail.webp',
+                              }
+                            : null,
                     canManageTwoFactor: false,
                     twoFactorEnabled: false,
                     requiresConfirmation: false,
@@ -137,6 +149,24 @@ void test('production SSR renders localized layouts and keeps consecutive reques
             if (component === 'settings/Profile') {
                 assert.ok(result.body.includes('value="Test User"'));
                 assert.ok(result.body.includes('value="test@example.com"'));
+                assert.ok(result.body.includes('saved-avatar.png'));
+                assert.ok(result.body.includes('1.5 KB'));
+                assert.ok(
+                    result.body.includes(
+                        'src="/storage/1/conversions/saved-avatar-thumbnail.webp"',
+                    ),
+                );
+                assert.ok(result.body.includes('type="file"'));
+                assert.match(
+                    result.body,
+                    /<img\b[^>]*class="size-20 shrink-0 rounded-full object-cover"/,
+                );
+                assert.ok(result.body.includes('data-slot="upload-dropzone"'));
+                assert.doesNotMatch(
+                    result.body,
+                    /data-slot="field-description"[^>]*>JPEG/,
+                );
+                assert.doesNotMatch(result.body, /blob:/);
             }
 
             if (component === 'auth/ResetPassword') {
