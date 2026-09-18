@@ -10,6 +10,8 @@
 /resources/js/actions
 /resources/js/routes
 /resources/js/wayfinder
+/resources/js/locales
+/lang/*.json
 /vendor
 .DS_Store
 .env
@@ -43,5 +45,4 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 
-/lang/*.json
-/resources/js/locales/generated/
+
