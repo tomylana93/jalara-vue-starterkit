@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form, Head } from '@inertiajs/vue3';
+import { useForm, Head } from '@inertiajs/vue3';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { logout } from '@/routes';
-import { send } from '@/routes/verification';
+import { store } from '@/actions/Laravel/Fortify/Http/Controllers/EmailVerificationNotificationController';
+
+import type { EmptyForm } from '@/types';
 
 const { trans } = useTrans();
 defineOptions({
@@ -19,6 +21,11 @@ defineOptions({
 defineProps<{
     status?: string;
 }>();
+const form = useForm<EmptyForm>({});
+
+const submit = () => {
+    form.submit(store());
+};
 </script>
 
 <template>
@@ -31,18 +38,14 @@ defineProps<{
         {{ trans('authentication.message.verification_sent') }}
     </div>
 
-    <Form
-        v-bind="send.form()"
-        class="space-y-6 text-center"
-        v-slot="{ processing }"
-    >
-        <Button :disabled="processing" variant="secondary">
-            <Spinner v-if="processing" />
+    <form @submit.prevent="submit" class="space-y-6 text-center">
+        <Button :disabled="form.processing" variant="secondary">
+            <Spinner v-if="form.processing" />
             {{ trans('authentication.button.resend_verification') }}
         </Button>
 
         <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
             {{ trans('navigation.button.logout') }}
         </TextLink>
-    </Form>
+    </form>
 </template>

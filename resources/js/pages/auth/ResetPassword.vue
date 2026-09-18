@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form, Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { useForm, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { update } from '@/routes/password';
+import { store } from '@/actions/Laravel/Fortify/Http/Controllers/NewPasswordController';
+
+import type { ResetPasswordForm } from '@/types';
 
 const { trans } = useTrans();
 defineOptions({
@@ -25,18 +26,24 @@ const props = defineProps<{
     passwordRules: string;
 }>();
 
-const inputEmail = ref(props.email);
+const form = useForm<ResetPasswordForm>({
+    token: props.token,
+    email: props.email,
+    password: '',
+    password_confirmation: '',
+});
+
+const submit = () => {
+    form.submit(store(), {
+        onSuccess: () => form.reset('password', 'password_confirmation'),
+    });
+};
 </script>
 
 <template>
     <Head :title="trans('authentication.heading.reset_password')" />
 
-    <Form
-        v-bind="update.form()"
-        :transform="(data) => ({ ...data, token, email })"
-        :reset-on-success="['password', 'password_confirmation']"
-        v-slot="{ errors, processing }"
-    >
+    <form @submit.prevent="submit">
         <div class="grid gap-6">
             <div class="grid gap-2">
                 <Label for="email">
@@ -46,12 +53,12 @@ const inputEmail = ref(props.email);
                     id="email"
                     type="email"
                     name="email"
+                    v-model="form.email"
                     autocomplete="email"
-                    v-model="inputEmail"
                     class="mt-1 block w-full"
                     readonly
                 />
-                <InputError :message="errors.email" class="mt-2" />
+                <InputError :message="form.errors.email" class="mt-2" />
             </div>
 
             <div class="grid gap-2">
@@ -61,13 +68,14 @@ const inputEmail = ref(props.email);
                 <PasswordInput
                     id="password"
                     name="password"
+                    v-model="form.password"
                     autocomplete="new-password"
                     class="mt-1 block w-full"
                     autofocus
                     :placeholder="trans('authentication.label.password')"
                     :passwordrules="passwordRules"
                 />
-                <InputError :message="errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
             <div class="grid gap-2">
@@ -77,6 +85,7 @@ const inputEmail = ref(props.email);
                 <PasswordInput
                     id="password_confirmation"
                     name="password_confirmation"
+                    v-model="form.password_confirmation"
                     autocomplete="new-password"
                     class="mt-1 block w-full"
                     :placeholder="
@@ -84,18 +93,18 @@ const inputEmail = ref(props.email);
                     "
                     :passwordrules="passwordRules"
                 />
-                <InputError :message="errors.password_confirmation" />
+                <InputError :message="form.errors.password_confirmation" />
             </div>
 
             <Button
                 type="submit"
                 class="mt-4 w-full"
-                :disabled="processing"
+                :disabled="form.processing"
                 data-test="reset-password-button"
             >
-                <Spinner v-if="processing" />
+                <Spinner v-if="form.processing" />
                 {{ trans('authentication.heading.reset_password') }}
             </Button>
         </div>
-    </Form>
+    </form>
 </template>

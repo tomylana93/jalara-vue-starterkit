@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form, Head, usePage } from '@inertiajs/vue3';
+import { useForm, Head, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { update } from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/DeleteUser.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
+
+import type { ProfileForm } from '@/types';
 
 const { trans } = useTrans();
 defineOptions({
@@ -28,6 +30,14 @@ defineOptions({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const form = useForm<ProfileForm>({
+    name: user.value.name,
+    email: user.value.email,
+});
+
+const submit = () => {
+    form.submit(update());
+};
 </script>
 
 <template>
@@ -42,11 +52,7 @@ const user = computed(() => page.props.auth.user);
             :description="trans('profile.description.settings')"
         />
 
-        <Form
-            v-bind="ProfileController.update.form()"
-            class="space-y-6"
-            v-slot="{ errors, processing }"
-        >
+        <form @submit.prevent="submit" class="space-y-6">
             <div class="grid gap-2">
                 <Label for="name">
                     {{ trans('authentication.label.name') }}
@@ -55,12 +61,12 @@ const user = computed(() => page.props.auth.user);
                     id="name"
                     class="mt-1 block w-full"
                     name="name"
-                    :default-value="user.name"
+                    v-model="form.name"
                     required
                     autocomplete="name"
                     :placeholder="trans('authentication.placeholder.full_name')"
                 />
-                <InputError class="mt-2" :message="errors.name" />
+                <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
             <div class="grid gap-2">
@@ -72,12 +78,12 @@ const user = computed(() => page.props.auth.user);
                     type="email"
                     class="mt-1 block w-full"
                     name="email"
-                    :default-value="user.email"
+                    v-model="form.email"
                     required
                     autocomplete="username"
                     :placeholder="trans('authentication.label.email_address')"
                 />
-                <InputError class="mt-2" :message="errors.email" />
+                <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div v-if="page.props.mustVerifyEmail && !user.email_verified_at">
@@ -102,13 +108,13 @@ const user = computed(() => page.props.auth.user);
 
             <div class="flex items-center gap-4">
                 <Button
-                    :disabled="processing"
+                    :disabled="form.processing"
                     data-test="update-profile-button"
                 >
                     {{ trans('common.button.save') }}
                 </Button>
             </div>
-        </Form>
+        </form>
     </div>
 
     <DeleteUser />

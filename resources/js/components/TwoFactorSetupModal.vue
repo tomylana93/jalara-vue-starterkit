@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from '@lucide/vue';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
@@ -23,8 +23,8 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
-import type { TwoFactorConfigContent } from '@/types';
+import { store as confirm } from '@/actions/Laravel/Fortify/Http/Controllers/ConfirmedTwoFactorAuthenticationController';
+import type { TwoFactorConfigContent, ConfirmTwoFactorForm } from '@/types';
 
 const { trans } = useTrans();
 type Props = {
@@ -42,7 +42,18 @@ const { qrCodeSvg, manualSetupKey, clearSetupData, fetchSetupData, errors } =
     useTwoFactorAuth();
 
 const showVerificationStep = ref(false);
-const code = ref<string>('');
+const form = useForm<ConfirmTwoFactorForm>({ code: '' });
+
+const submit = () => {
+    form.submit(confirm(), {
+        errorBag: 'confirmTwoFactorAuthentication',
+        onError: () => form.reset(),
+        onFinish: () => form.reset('code'),
+        onSuccess: () => {
+            isOpen.value = false;
+        },
+    });
+};
 
 const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 
@@ -93,7 +104,7 @@ const resetModalState = () => {
     }
 
     showVerificationStep.value = false;
-    code.value = '';
+    form.resetAndClearErrors();
 };
 
 watch(
@@ -240,15 +251,7 @@ watch(
                 </template>
 
                 <template v-else>
-                    <Form
-                        v-bind="confirm.form()"
-                        error-bag="confirmTwoFactorAuthentication"
-                        reset-on-error
-                        @finish="code = ''"
-                        @success="isOpen = false"
-                        v-slot="{ errors, processing }"
-                    >
-                        <input type="hidden" name="code" :value="code" />
+                    <form @submit.prevent="submit">
                         <div
                             ref="pinInputContainerRef"
                             class="relative w-full space-y-3"
@@ -258,9 +261,9 @@ watch(
                             >
                                 <InputOTP
                                     id="otp"
-                                    v-model="code"
+                                    v-model="form.code"
                                     :maxlength="6"
-                                    :disabled="processing"
+                                    :disabled="form.processing"
                                     autofocus
                                 >
                                     <InputOTPGroup>
@@ -271,7 +274,7 @@ watch(
                                         />
                                     </InputOTPGroup>
                                 </InputOTP>
-                                <InputError :message="errors?.code" />
+                                <InputError :message="form.errors.code" />
                             </div>
 
                             <div class="flex w-full items-center space-x-5">
@@ -280,20 +283,22 @@ watch(
                                     variant="outline"
                                     class="w-auto flex-1"
                                     @click="showVerificationStep = false"
-                                    :disabled="processing"
+                                    :disabled="form.processing"
                                 >
                                     {{ trans('common.button.back') }}
                                 </Button>
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
-                                    :disabled="processing || code.length < 6"
+                                    :disabled="
+                                        form.processing || form.code.length < 6
+                                    "
                                 >
                                     {{ trans('common.button.confirm') }}
                                 </Button>
                             </div>
                         </div>
-                    </Form>
+                    </form>
                 </template>
             </div>
         </DialogContent>

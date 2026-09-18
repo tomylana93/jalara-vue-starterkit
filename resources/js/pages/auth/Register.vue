@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form, Head } from '@inertiajs/vue3';
+import { useForm, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -10,7 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
-import { store } from '@/routes/register';
+import { store } from '@/actions/Laravel/Fortify/Http/Controllers/RegisteredUserController';
+
+import type { RegisterForm } from '@/types';
 
 const { trans } = useTrans();
 defineProps<{
@@ -23,17 +25,24 @@ defineOptions({
         descriptionKey: 'authentication.description.register',
     },
 });
+const form = useForm<RegisterForm>({
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+});
+
+const submit = () => {
+    form.submit(store(), {
+        onSuccess: () => form.reset('password', 'password_confirmation'),
+    });
+};
 </script>
 
 <template>
     <Head :title="trans('authentication.button.register')" />
 
-    <Form
-        v-bind="store.form()"
-        :reset-on-success="['password', 'password_confirmation']"
-        v-slot="{ errors, processing }"
-        class="flex flex-col gap-6"
-    >
+    <form @submit.prevent="submit" class="flex flex-col gap-6">
         <div class="grid gap-6">
             <div class="grid gap-2">
                 <Label for="name">
@@ -47,9 +56,10 @@ defineOptions({
                     :tabindex="1"
                     autocomplete="name"
                     name="name"
+                    v-model="form.name"
                     :placeholder="trans('authentication.placeholder.full_name')"
                 />
-                <InputError :message="errors.name" />
+                <InputError :message="form.errors.name" />
             </div>
 
             <div class="grid gap-2">
@@ -63,9 +73,10 @@ defineOptions({
                     :tabindex="2"
                     autocomplete="email"
                     name="email"
+                    v-model="form.email"
                     placeholder="email@example.com"
                 />
-                <InputError :message="errors.email" />
+                <InputError :message="form.errors.email" />
             </div>
 
             <div class="grid gap-2">
@@ -78,10 +89,11 @@ defineOptions({
                     :tabindex="3"
                     autocomplete="new-password"
                     name="password"
+                    v-model="form.password"
                     :placeholder="trans('authentication.label.password')"
                     :passwordrules="passwordRules"
                 />
-                <InputError :message="errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
             <div class="grid gap-2">
@@ -94,22 +106,23 @@ defineOptions({
                     :tabindex="4"
                     autocomplete="new-password"
                     name="password_confirmation"
+                    v-model="form.password_confirmation"
                     :placeholder="
                         trans('authentication.label.confirm_password')
                     "
                     :passwordrules="passwordRules"
                 />
-                <InputError :message="errors.password_confirmation" />
+                <InputError :message="form.errors.password_confirmation" />
             </div>
 
             <Button
                 type="submit"
                 class="mt-2 w-full"
                 tabindex="5"
-                :disabled="processing"
+                :disabled="form.processing"
                 data-test="register-user-button"
             >
-                <Spinner v-if="processing" />
+                <Spinner v-if="form.processing" />
                 {{ trans('authentication.button.create_account') }}
             </Button>
         </div>
@@ -124,5 +137,5 @@ defineOptions({
                 {{ trans('authentication.button.login') }}
             </TextLink>
         </div>
-    </Form>
+    </form>
 </template>

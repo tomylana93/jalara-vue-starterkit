@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from '@lucide/vue';
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue';
 import AlertError from '@/components/AlertError.vue';
@@ -14,7 +14,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { regenerateRecoveryCodes } from '@/routes/two-factor';
+import { store as regenerateRecoveryCodes } from '@/actions/Laravel/Fortify/Http/Controllers/RecoveryCodeController';
+import type { EmptyForm } from '@/types';
 
 const { trans } = useTrans();
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
@@ -39,6 +40,16 @@ onMounted(async () => {
         await fetchRecoveryCodes();
     }
 });
+const form = useForm<EmptyForm>({});
+
+const regenerate = () => {
+    form.submit(regenerateRecoveryCodes(), {
+        preserveScroll: true,
+        onSuccess: () => {
+            void fetchRecoveryCodes();
+        },
+    });
+};
 </script>
 
 <template>
@@ -69,23 +80,19 @@ onMounted(async () => {
                     {{ trans('security.label.recovery_codes') }}
                 </Button>
 
-                <Form
+                <form
                     v-if="isRecoveryCodesVisible && recoveryCodesList.length"
-                    v-bind="regenerateRecoveryCodes.form()"
-                    method="post"
-                    :options="{ preserveScroll: true }"
-                    @success="fetchRecoveryCodes"
-                    #default="{ processing }"
+                    @submit.prevent="regenerate"
                 >
                     <Button
                         variant="secondary"
                         type="submit"
-                        :disabled="processing"
+                        :disabled="form.processing"
                     >
                         <RefreshCw />
                         {{ trans('security.button.regenerate_codes') }}
                     </Button>
-                </Form>
+                </form>
             </div>
             <div
                 :class="[

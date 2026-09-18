@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form, Head } from '@inertiajs/vue3';
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+import { useForm, Head } from '@inertiajs/vue3';
+import { update } from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
@@ -13,6 +13,8 @@ import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.v
 import ManagePasskeys from '@/components/ManagePasskeys.vue';
 import type { Props as ManageTwoFactorProps } from '@/components/ManageTwoFactor.vue';
 import ManageTwoFactor from '@/components/ManageTwoFactor.vue';
+
+import type { UpdatePasswordForm } from '@/types';
 
 const { trans } = useTrans();
 // oxfmt-ignore
@@ -33,6 +35,19 @@ defineOptions({
         ],
     },
 });
+const form = useForm<UpdatePasswordForm>({
+    current_password: '',
+    password: '',
+    password_confirmation: '',
+});
+
+const submit = () => {
+    form.submit(update(), {
+        preserveScroll: true,
+        onSuccess: () => form.reset(),
+        onError: () => form.reset(),
+    });
+};
 </script>
 
 <template>
@@ -47,20 +62,7 @@ defineOptions({
             :description="trans('security.description.update_password')"
         />
 
-        <Form
-            v-bind="SecurityController.update.form()"
-            :options="{
-                preserveScroll: true,
-            }"
-            reset-on-success
-            :reset-on-error="[
-                'password',
-                'password_confirmation',
-                'current_password',
-            ]"
-            class="space-y-6"
-            v-slot="{ errors, processing }"
-        >
+        <form @submit.prevent="submit" class="space-y-6">
             <div class="grid gap-2">
                 <Label for="current_password">
                     {{ trans('security.label.current_password') }}
@@ -68,11 +70,12 @@ defineOptions({
                 <PasswordInput
                     id="current_password"
                     name="current_password"
+                    v-model="form.current_password"
                     class="mt-1 block w-full"
                     autocomplete="current-password"
                     :placeholder="trans('security.label.current_password')"
                 />
-                <InputError :message="errors.current_password" />
+                <InputError :message="form.errors.current_password" />
             </div>
 
             <div class="grid gap-2">
@@ -82,12 +85,13 @@ defineOptions({
                 <PasswordInput
                     id="password"
                     name="password"
+                    v-model="form.password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     :placeholder="trans('security.label.new_password')"
                     :passwordrules="props.passwordRules"
                 />
-                <InputError :message="errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
             <div class="grid gap-2">
@@ -97,6 +101,7 @@ defineOptions({
                 <PasswordInput
                     id="password_confirmation"
                     name="password_confirmation"
+                    v-model="form.password_confirmation"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                     :placeholder="
@@ -104,18 +109,18 @@ defineOptions({
                     "
                     :passwordrules="props.passwordRules"
                 />
-                <InputError :message="errors.password_confirmation" />
+                <InputError :message="form.errors.password_confirmation" />
             </div>
 
             <div class="flex items-center gap-4">
                 <Button
-                    :disabled="processing"
+                    :disabled="form.processing"
                     data-test="update-password-button"
                 >
                     {{ trans('common.button.save') }}
                 </Button>
             </div>
-        </Form>
+        </form>
     </div>
 
     <ManageTwoFactor

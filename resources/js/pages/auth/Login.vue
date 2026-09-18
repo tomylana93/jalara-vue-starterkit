@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTrans } from '@/composables/useTrans';
 
-import { Form, Head } from '@inertiajs/vue3';
+import { useForm, Head } from '@inertiajs/vue3';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -11,9 +11,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { register } from '@/routes';
-import { store } from '@/routes/login';
+import { store } from '@/actions/Laravel/Fortify/Http/Controllers/AuthenticatedSessionController';
 import { request } from '@/routes/password';
 import PasskeyVerify from '@/components/PasskeyVerify.vue';
+
+import type { LoginForm } from '@/types';
 
 const { trans } = useTrans();
 defineOptions({
@@ -27,6 +29,13 @@ defineProps<{
     status?: string;
     canResetPassword: boolean;
 }>();
+const form = useForm<LoginForm>({ email: '', password: '', remember: false });
+
+const submit = () => {
+    form.submit(store(), {
+        onSuccess: () => form.reset('password'),
+    });
+};
 </script>
 
 <template>
@@ -41,12 +50,7 @@ defineProps<{
 
     <PasskeyVerify />
 
-    <Form
-        v-bind="store.form()"
-        :reset-on-success="['password']"
-        v-slot="{ errors, processing }"
-        class="flex flex-col gap-6"
-    >
+    <form @submit.prevent="submit" class="flex flex-col gap-6">
         <div class="grid gap-6">
             <div class="grid gap-2">
                 <Label for="email">
@@ -56,13 +60,14 @@ defineProps<{
                     id="email"
                     type="email"
                     name="email"
+                    v-model="form.email"
                     required
                     autofocus
                     :tabindex="1"
                     autocomplete="email"
                     placeholder="email@example.com"
                 />
-                <InputError :message="errors.email" />
+                <InputError :message="form.errors.email" />
             </div>
 
             <div class="grid gap-2">
@@ -82,17 +87,23 @@ defineProps<{
                 <PasswordInput
                     id="password"
                     name="password"
+                    v-model="form.password"
                     required
                     :tabindex="2"
                     autocomplete="current-password"
                     :placeholder="trans('authentication.label.password')"
                 />
-                <InputError :message="errors.password" />
+                <InputError :message="form.errors.password" />
             </div>
 
             <div class="flex items-center justify-between">
                 <Label for="remember" class="flex items-center space-x-3">
-                    <Checkbox id="remember" name="remember" :tabindex="3" />
+                    <Checkbox
+                        id="remember"
+                        name="remember"
+                        v-model="form.remember"
+                        :tabindex="3"
+                    />
                     <span> {{ trans('authentication.label.remember') }} </span>
                 </Label>
             </div>
@@ -101,10 +112,10 @@ defineProps<{
                 type="submit"
                 class="mt-4 w-full"
                 :tabindex="4"
-                :disabled="processing"
+                :disabled="form.processing"
                 data-test="login-button"
             >
-                <Spinner v-if="processing" />
+                <Spinner v-if="form.processing" />
                 {{ trans('authentication.button.login') }}
             </Button>
         </div>
@@ -115,5 +126,5 @@ defineProps<{
                 {{ trans('authentication.link.signup') }}
             </TextLink>
         </div>
-    </Form>
+    </form>
 </template>

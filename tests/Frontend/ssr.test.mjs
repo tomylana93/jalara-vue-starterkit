@@ -34,11 +34,16 @@ void test('production SSR renders localized layouts and keeps consecutive reques
         for (const [component, key] of [
             ['auth/Login', 'authentication.heading.login'],
             ['auth/Register', 'authentication.heading.register'],
+            ['auth/ConfirmPassword', 'authentication.label.confirm_password'],
+            ['auth/ForgotPassword', 'authentication.heading.forgot_password'],
+            ['auth/ResetPassword', 'authentication.heading.reset_password'],
+            ['auth/VerifyEmail', 'authentication.heading.verify_email'],
             [
                 'auth/TwoFactorChallenge',
                 'authentication.heading.authentication_code',
             ],
             ['settings/Appearance', 'appearance.heading.settings'],
+            ['settings/Profile', 'profile.heading.settings'],
             ['settings/Security', 'security.heading.update_password'],
         ]) {
             const result = await render({
@@ -59,6 +64,8 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                     localization: { locale, fallbackLocale: 'en' },
                     canResetPassword: true,
                     passwordRules: '',
+                    email: 'reset@example.com',
+                    token: 'reset-token',
                     canManagePasskeys: true,
                     passkeys: [],
                     canManageTwoFactor: false,
@@ -79,6 +86,15 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                 `${locale} ${component} must render ${expected}`,
             );
             assert.ok(result.head.join('').includes('Jalara'));
+
+            if (component === 'settings/Profile') {
+                assert.ok(result.body.includes('value="Test User"'));
+                assert.ok(result.body.includes('value="test@example.com"'));
+            }
+
+            if (component === 'auth/ResetPassword') {
+                assert.ok(result.body.includes('value="reset@example.com"'));
+            }
         }
     }
 });
