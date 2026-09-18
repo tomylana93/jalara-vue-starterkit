@@ -2,7 +2,7 @@
 command = "php"
 args = ["artisan", "boost:mcp"]
 
-[mcp_servers.shadcn_vue]2:03:38PM
+[mcp_servers.shadcn_vue]
 command = "npx"
 args = ["shadcn-vue@latest", "mcp"]
 
