@@ -38,7 +38,7 @@ const submit = () => {
         {{ trans('authentication.message.verification_sent') }}
     </div>
 
-    <form @submit.prevent="submit" class="space-y-6 text-center">
+    <form novalidate @submit.prevent="submit" class="space-y-6 text-center">
         <Button :disabled="form.processing" variant="secondary">
             <Spinner v-if="form.processing" />
             {{ trans('authentication.button.resend_verification') }}

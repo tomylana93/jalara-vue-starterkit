@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useTrans } from '@/composables/useTrans';
 
 import { useForm, Head, setLayoutProps } from '@inertiajs/vue3';
@@ -74,86 +75,137 @@ const toggleRecoveryMode = (): void => {
 <template>
     <Head :title="trans('security.heading.two_factor')" />
 
-    <div class="space-y-6">
+    <div class="flex flex-col gap-6">
         <template v-if="!showRecoveryInput">
-            <form @submit.prevent="submitCode" class="space-y-4">
-                <div
-                    class="flex flex-col items-center justify-center space-y-3 text-center"
-                >
-                    <div class="flex w-full items-center justify-center">
-                        <InputOTP
-                            id="otp"
-                            v-model="codeForm.code"
-                            :maxlength="6"
-                            :disabled="codeForm.processing"
-                            autofocus
-                        >
-                            <InputOTPGroup>
-                                <InputOTPSlot
-                                    v-for="index in 6"
-                                    :key="index"
-                                    :index="index - 1"
-                                />
-                            </InputOTPGroup>
-                        </InputOTP>
-                    </div>
-                    <InputError :message="codeForm.errors.code" />
-                </div>
-                <Button
-                    type="submit"
-                    class="w-full"
-                    :disabled="codeForm.processing"
-                >
-                    {{ trans('common.button.continue') }}
-                </Button>
-                <div class="text-muted-foreground text-center text-sm">
-                    <span>
-                        {{ trans('authentication.description.alternative') }}
-                    </span>
-                    <button
-                        type="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                        @click="toggleRecoveryMode"
+            <form
+                novalidate
+                @submit.prevent="submitCode"
+                class="flex flex-col gap-4"
+            >
+                <FieldGroup>
+                    <Field
+                        class="flex flex-col items-center justify-center gap-3 text-center"
+                        :data-invalid="Boolean(codeForm.errors.code)"
                     >
-                        {{ authConfigContent.buttonText }}
-                    </button>
-                </div>
+                        <div class="flex w-full items-center justify-center">
+                            <InputOTP
+                                id="otp"
+                                v-model="codeForm.code"
+                                :aria-invalid="Boolean(codeForm.errors.code)"
+                                :aria-describedby="
+                                    codeForm.errors.code
+                                        ? 'two-factor-challenge-code-error'
+                                        : undefined
+                                "
+                                :maxlength="6"
+                                :disabled="codeForm.processing"
+                                autofocus
+                            >
+                                <InputOTPGroup>
+                                    <InputOTPSlot
+                                        :aria-invalid="
+                                            Boolean(codeForm.errors.code)
+                                        "
+                                        v-for="index in 6"
+                                        :key="index"
+                                        :index="index - 1"
+                                    />
+                                </InputOTPGroup>
+                            </InputOTP>
+                        </div>
+                        <InputError
+                            id="two-factor-challenge-code-error"
+                            :message="codeForm.errors.code"
+                        />
+                    </Field>
+                    <Button
+                        type="submit"
+                        class="w-full"
+                        :disabled="codeForm.processing"
+                    >
+                        {{ trans('common.button.continue') }}
+                    </Button>
+                    <div class="text-muted-foreground text-center text-sm">
+                        <span>
+                            {{
+                                trans('authentication.description.alternative')
+                            }}
+                        </span>
+                        <button
+                            type="button"
+                            class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                            @click="toggleRecoveryMode"
+                        >
+                            {{ authConfigContent.buttonText }}
+                        </button>
+                    </div>
+                </FieldGroup>
             </form>
         </template>
 
         <template v-else>
-            <form @submit.prevent="submitRecoveryCode" class="space-y-4">
-                <Input
-                    name="recovery_code"
-                    v-model="recoveryForm.recovery_code"
-                    type="text"
-                    :placeholder="
-                        trans('authentication.placeholder.recovery_code')
-                    "
-                    :autofocus="showRecoveryInput"
-                    required
-                />
-                <InputError :message="recoveryForm.errors.recovery_code" />
-                <Button
-                    type="submit"
-                    class="w-full"
-                    :disabled="recoveryForm.processing"
-                >
-                    {{ trans('common.button.continue') }}
-                </Button>
-
-                <div class="text-muted-foreground text-center text-sm">
-                    <span>
-                        {{ trans('authentication.description.alternative') }}
-                    </span>
-                    <button
-                        type="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                        @click="toggleRecoveryMode"
+            <form
+                novalidate
+                @submit.prevent="submitRecoveryCode"
+                class="flex flex-col gap-4"
+            >
+                <FieldGroup>
+                    <Field
+                        :data-invalid="
+                            Boolean(recoveryForm.errors.recovery_code)
+                        "
                     >
-                        {{ authConfigContent.buttonText }}
-                    </button>
-                </div>
+                        <FieldLabel for="recovery-code" class="sr-only">{{
+                            trans('authentication.placeholder.recovery_code')
+                        }}</FieldLabel>
+                        <Input
+                            id="recovery-code"
+                            name="recovery_code"
+                            v-model="recoveryForm.recovery_code"
+                            :aria-invalid="
+                                Boolean(recoveryForm.errors.recovery_code)
+                            "
+                            :aria-describedby="
+                                recoveryForm.errors.recovery_code
+                                    ? 'two-factor-challenge-recovery-code-error'
+                                    : undefined
+                            "
+                            type="text"
+                            :placeholder="
+                                trans(
+                                    'authentication.placeholder.recovery_code',
+                                )
+                            "
+                            :autofocus="showRecoveryInput"
+                        />
+                        <InputError
+                            id="two-factor-challenge-recovery-code-error"
+                            :message="recoveryForm.errors.recovery_code"
+                        />
+                    </Field>
+                    <Button
+                        type="submit"
+                        class="w-full"
+                        :disabled="recoveryForm.processing"
+                    >
+                        {{ trans('common.button.continue') }}
+                    </Button>
+
+                    <div class="text-muted-foreground text-center text-sm">
+                        <span>
+                            {{
+                                trans('authentication.description.alternative')
+                            }}
+                        </span>
+                        <button
+                            type="button"
+                            class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                            @click="toggleRecoveryMode"
+                        >
+                            {{ authConfigContent.buttonText }}
+                        </button>
+                    </div>
+                </FieldGroup>
             </form>
         </template>
     </div>

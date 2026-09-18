@@ -87,6 +87,26 @@ void test('production SSR renders localized layouts and keeps consecutive reques
             );
             assert.ok(result.head.join('').includes('Jalara'));
 
+            for (const [form] of result.body.matchAll(/<form\b[^>]*>/g)) {
+                assert.match(form, /\bnovalidate(?:\s|=|>)/, component);
+            }
+            assert.doesNotMatch(
+                result.body,
+                /<input\b[^>]*\btype="email"/,
+                component,
+            );
+            assert.doesNotMatch(
+                result.body,
+                /<input\b[^>]*\srequired(?:\s|=|>)/,
+                component,
+            );
+            for (const [input] of result.body.matchAll(
+                /<input\b[^>]*\bname="email"[^>]*>/g,
+            )) {
+                assert.match(input, /\btype="text"/, component);
+                assert.match(input, /\binputmode="email"/, component);
+            }
+
             if (component === 'settings/Profile') {
                 assert.ok(result.body.includes('value="Test User"'));
                 assert.ok(result.body.includes('value="test@example.com"'));

@@ -81,6 +81,7 @@ const regenerate = () => {
                 </Button>
 
                 <form
+                    novalidate
                     v-if="isRecoveryCodesVisible && recoveryCodesList.length"
                     @submit.prevent="regenerate"
                 >

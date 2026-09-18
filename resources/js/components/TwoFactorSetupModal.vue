@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Field, FieldGroup } from '@/components/ui/field';
 import { useTrans } from '@/composables/useTrans';
 
 import { useForm } from '@inertiajs/vue3';
@@ -198,7 +199,7 @@ watch(
                             </div>
                         </div>
 
-                        <div class="flex w-full items-center space-x-5">
+                        <div class="flex w-full items-center gap-5">
                             <Button class="w-full" @click="handleModalNextStep">
                                 {{ modalConfig.buttonText }}
                             </Button>
@@ -251,53 +252,71 @@ watch(
                 </template>
 
                 <template v-else>
-                    <form @submit.prevent="submit">
-                        <div
-                            ref="pinInputContainerRef"
-                            class="relative w-full space-y-3"
-                        >
+                    <form novalidate @submit.prevent="submit">
+                        <FieldGroup>
                             <div
-                                class="flex w-full flex-col items-center justify-center space-y-3 py-2"
+                                ref="pinInputContainerRef"
+                                class="relative flex w-full flex-col gap-3"
                             >
-                                <InputOTP
-                                    id="otp"
-                                    v-model="form.code"
-                                    :maxlength="6"
-                                    :disabled="form.processing"
-                                    autofocus
+                                <Field
+                                    class="flex w-full flex-col items-center justify-center gap-3 py-2"
+                                    :data-invalid="Boolean(form.errors.code)"
                                 >
-                                    <InputOTPGroup>
-                                        <InputOTPSlot
-                                            v-for="index in 6"
-                                            :key="index"
-                                            :index="index - 1"
-                                        />
-                                    </InputOTPGroup>
-                                </InputOTP>
-                                <InputError :message="form.errors.code" />
-                            </div>
+                                    <InputOTP
+                                        id="otp"
+                                        v-model="form.code"
+                                        :aria-invalid="
+                                            Boolean(form.errors.code)
+                                        "
+                                        :aria-describedby="
+                                            form.errors.code
+                                                ? 'two-factor-setup-modal-code-error'
+                                                : undefined
+                                        "
+                                        :maxlength="6"
+                                        :disabled="form.processing"
+                                        autofocus
+                                    >
+                                        <InputOTPGroup>
+                                            <InputOTPSlot
+                                                :aria-invalid="
+                                                    Boolean(form.errors.code)
+                                                "
+                                                v-for="index in 6"
+                                                :key="index"
+                                                :index="index - 1"
+                                            />
+                                        </InputOTPGroup>
+                                    </InputOTP>
+                                    <InputError
+                                        id="two-factor-setup-modal-code-error"
+                                        :message="form.errors.code"
+                                    />
+                                </Field>
 
-                            <div class="flex w-full items-center space-x-5">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    class="w-auto flex-1"
-                                    @click="showVerificationStep = false"
-                                    :disabled="form.processing"
-                                >
-                                    {{ trans('common.button.back') }}
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    class="w-auto flex-1"
-                                    :disabled="
-                                        form.processing || form.code.length < 6
-                                    "
-                                >
-                                    {{ trans('common.button.confirm') }}
-                                </Button>
+                                <div class="flex w-full items-center gap-5">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        class="w-auto flex-1"
+                                        @click="showVerificationStep = false"
+                                        :disabled="form.processing"
+                                    >
+                                        {{ trans('common.button.back') }}
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        class="w-auto flex-1"
+                                        :disabled="
+                                            form.processing ||
+                                            form.code.length < 6
+                                        "
+                                    >
+                                        {{ trans('common.button.confirm') }}
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
+                        </FieldGroup>
                     </form>
                 </template>
             </div>

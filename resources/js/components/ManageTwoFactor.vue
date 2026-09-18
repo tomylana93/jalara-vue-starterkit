@@ -69,7 +69,7 @@ const disableTwoFactor = () => {
                     <ShieldCheck />
                     {{ trans('security.button.continue_setup') }}
                 </Button>
-                <form v-else @submit.prevent="enableTwoFactor">
+                <form novalidate v-else @submit.prevent="enableTwoFactor">
                     <Button type="submit" :disabled="enableForm.processing">
                         {{ trans('security.button.enable_two_factor') }}
                     </Button>
@@ -83,7 +83,7 @@ const disableTwoFactor = () => {
             </p>
 
             <div class="relative inline">
-                <form @submit.prevent="disableTwoFactor">
+                <form novalidate @submit.prevent="disableTwoFactor">
                     <Button
                         variant="destructive"
                         type="submit"

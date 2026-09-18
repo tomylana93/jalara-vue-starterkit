@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useTrans } from '@/composables/useTrans';
 
 import { useForm, Head } from '@inertiajs/vue3';
@@ -7,7 +8,6 @@ import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/security';
 import type { Props as ManagePasskeysProps } from '@/components/ManagePasskeys.vue';
 import ManagePasskeys from '@/components/ManagePasskeys.vue';
@@ -55,71 +55,111 @@ const submit = () => {
 
     <h1 class="sr-only">{{ trans('security.heading.settings') }}</h1>
 
-    <div class="space-y-6">
+    <div class="flex flex-col gap-6">
         <Heading
             variant="small"
             :title="trans('security.heading.update_password')"
             :description="trans('security.description.update_password')"
         />
 
-        <form @submit.prevent="submit" class="space-y-6">
-            <div class="grid gap-2">
-                <Label for="current_password">
-                    {{ trans('security.label.current_password') }}
-                </Label>
-                <PasswordInput
-                    id="current_password"
-                    name="current_password"
-                    v-model="form.current_password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                    :placeholder="trans('security.label.current_password')"
-                />
-                <InputError :message="form.errors.current_password" />
-            </div>
-
-            <div class="grid gap-2">
-                <Label for="password">
-                    {{ trans('security.label.new_password') }}
-                </Label>
-                <PasswordInput
-                    id="password"
-                    name="password"
-                    v-model="form.password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                    :placeholder="trans('security.label.new_password')"
-                    :passwordrules="props.passwordRules"
-                />
-                <InputError :message="form.errors.password" />
-            </div>
-
-            <div class="grid gap-2">
-                <Label for="password_confirmation">
-                    {{ trans('authentication.label.confirm_password') }}
-                </Label>
-                <PasswordInput
-                    id="password_confirmation"
-                    name="password_confirmation"
-                    v-model="form.password_confirmation"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                    :placeholder="
-                        trans('authentication.label.confirm_password')
-                    "
-                    :passwordrules="props.passwordRules"
-                />
-                <InputError :message="form.errors.password_confirmation" />
-            </div>
-
-            <div class="flex items-center gap-4">
-                <Button
-                    :disabled="form.processing"
-                    data-test="update-password-button"
+        <form novalidate @submit.prevent="submit" class="flex flex-col gap-6">
+            <FieldGroup>
+                <Field
+                    class="grid gap-2"
+                    :data-invalid="Boolean(form.errors.current_password)"
                 >
-                    {{ trans('common.button.save') }}
-                </Button>
-            </div>
+                    <FieldLabel for="current_password">
+                        {{ trans('security.label.current_password') }}
+                    </FieldLabel>
+                    <PasswordInput
+                        id="current_password"
+                        name="current_password"
+                        v-model="form.current_password"
+                        :aria-invalid="Boolean(form.errors.current_password)"
+                        :aria-describedby="
+                            form.errors.current_password
+                                ? 'security-current-password-error'
+                                : undefined
+                        "
+                        class="mt-1 block w-full"
+                        autocomplete="current-password"
+                        :placeholder="trans('security.label.current_password')"
+                    />
+                    <InputError
+                        id="security-current-password-error"
+                        :message="form.errors.current_password"
+                    />
+                </Field>
+
+                <Field
+                    class="grid gap-2"
+                    :data-invalid="Boolean(form.errors.password)"
+                >
+                    <FieldLabel for="password">
+                        {{ trans('security.label.new_password') }}
+                    </FieldLabel>
+                    <PasswordInput
+                        id="password"
+                        name="password"
+                        v-model="form.password"
+                        :aria-invalid="Boolean(form.errors.password)"
+                        :aria-describedby="
+                            form.errors.password
+                                ? 'security-password-error'
+                                : undefined
+                        "
+                        class="mt-1 block w-full"
+                        autocomplete="new-password"
+                        :placeholder="trans('security.label.new_password')"
+                        :passwordrules="props.passwordRules"
+                    />
+                    <InputError
+                        id="security-password-error"
+                        :message="form.errors.password"
+                    />
+                </Field>
+
+                <Field
+                    class="grid gap-2"
+                    :data-invalid="Boolean(form.errors.password_confirmation)"
+                >
+                    <FieldLabel for="password_confirmation">
+                        {{ trans('authentication.label.confirm_password') }}
+                    </FieldLabel>
+                    <PasswordInput
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        v-model="form.password_confirmation"
+                        :aria-invalid="
+                            Boolean(form.errors.password_confirmation)
+                        "
+                        :aria-describedby="
+                            form.errors.password_confirmation
+                                ? 'security-password-confirmation-error'
+                                : undefined
+                        "
+                        class="mt-1 block w-full"
+                        autocomplete="new-password"
+                        :placeholder="
+                            trans('authentication.label.confirm_password')
+                        "
+                        :passwordrules="props.passwordRules"
+                    />
+                    <InputError
+                        id="security-password-confirmation-error"
+                        :message="form.errors.password_confirmation"
+                    />
+                </Field>
+
+                <div class="flex items-center gap-4">
+                    <Button
+                        :disabled="form.processing"
+                        data-test="update-password-button"
+                    >
+                        {{ trans('common.button.save') }}
+                    </Button>
+                </div>
+            </FieldGroup>
         </form>
     </div>
 

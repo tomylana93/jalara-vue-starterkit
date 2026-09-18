@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useTrans } from '@/composables/useTrans';
 
 import { useForm, Head } from '@inertiajs/vue3';
@@ -6,7 +7,6 @@ import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 import { store } from '@/actions/Laravel/Fortify/Http/Controllers/PasswordResetLinkController';
@@ -41,34 +41,49 @@ const submit = () => {
         {{ status }}
     </div>
 
-    <div class="space-y-6">
-        <form @submit.prevent="submit">
-            <div class="grid gap-2">
-                <Label for="email">
-                    {{ trans('authentication.label.email_address') }}
-                </Label>
-                <Input
-                    id="email"
-                    type="email"
-                    name="email"
-                    v-model="form.email"
-                    autocomplete="off"
-                    autofocus
-                    placeholder="email@example.com"
-                />
-                <InputError :message="form.errors.email" />
-            </div>
-
-            <div class="my-6 flex items-center justify-start">
-                <Button
-                    class="w-full"
-                    :disabled="form.processing"
-                    data-test="email-password-reset-link-button"
+    <div class="flex flex-col gap-6">
+        <form novalidate @submit.prevent="submit">
+            <FieldGroup>
+                <Field
+                    class="grid gap-2"
+                    :data-invalid="Boolean(form.errors.email)"
                 >
-                    <Spinner v-if="form.processing" />
-                    {{ trans('authentication.button.email_reset_link') }}
-                </Button>
-            </div>
+                    <FieldLabel for="email">
+                        {{ trans('authentication.label.email_address') }}
+                    </FieldLabel>
+                    <Input
+                        id="email"
+                        type="text"
+                        inputmode="email"
+                        name="email"
+                        v-model="form.email"
+                        :aria-invalid="Boolean(form.errors.email)"
+                        :aria-describedby="
+                            form.errors.email
+                                ? 'forgot-password-email-error'
+                                : undefined
+                        "
+                        autocomplete="off"
+                        autofocus
+                        placeholder="email@example.com"
+                    />
+                    <InputError
+                        id="forgot-password-email-error"
+                        :message="form.errors.email"
+                    />
+                </Field>
+
+                <div class="my-6 flex items-center justify-start">
+                    <Button
+                        class="w-full"
+                        :disabled="form.processing"
+                        data-test="email-password-reset-link-button"
+                    >
+                        <Spinner v-if="form.processing" />
+                        {{ trans('authentication.button.email_reset_link') }}
+                    </Button>
+                </div>
+            </FieldGroup>
         </form>
 
         <div class="text-muted-foreground space-x-1 text-center text-sm">

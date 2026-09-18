@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useTrans } from '@/composables/useTrans';
 
 import { usePasskeyRegister } from '@laravel/passkeys/vue';
@@ -6,7 +7,6 @@ import { ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 const { trans } = useTrans();
 const emit = defineEmits<{
@@ -72,40 +72,43 @@ const handleCancel = () => {
     </Button>
 
     <form
+        novalidate
         v-else
         @submit="handleSubmit"
         class="border-border bg-muted/50 space-y-4 rounded-lg border p-4"
     >
-        <div class="grid gap-2">
-            <Label for="passkey-name">
-                {{ trans('security.label.passkey_name') }}
-            </Label>
-            <Input
-                id="passkey-name"
-                type="text"
-                v-model="name"
-                :placeholder="trans('security.placeholder.passkey_name')"
-                class="border-foreground/20 mt-1 block w-full"
-                autofocus
-            />
-            <p class="text-muted-foreground text-xs">
-                {{ trans('security.description.passkey_name') }}
-            </p>
-        </div>
+        <FieldGroup>
+            <Field class="grid gap-2">
+                <FieldLabel for="passkey-name">
+                    {{ trans('security.label.passkey_name') }}
+                </FieldLabel>
+                <Input
+                    id="passkey-name"
+                    type="text"
+                    v-model="name"
+                    :placeholder="trans('security.placeholder.passkey_name')"
+                    class="border-foreground/20 mt-1 block w-full"
+                    autofocus
+                />
+                <p class="text-muted-foreground text-xs">
+                    {{ trans('security.description.passkey_name') }}
+                </p>
+            </Field>
 
-        <InputError v-if="error" :message="error" />
+            <InputError v-if="error" :message="error" />
 
-        <div class="flex gap-2">
-            <Button type="submit" :disabled="isLoading || !name.trim()">
-                {{
-                    isLoading
-                        ? trans('security.label.registering')
-                        : trans('security.button.register_passkey')
-                }}
-            </Button>
-            <Button type="button" variant="ghost" @click="handleCancel">
-                {{ trans('common.button.cancel') }}
-            </Button>
-        </div>
+            <div class="flex gap-2">
+                <Button type="submit" :disabled="isLoading || !name.trim()">
+                    {{
+                        isLoading
+                            ? trans('security.label.registering')
+                            : trans('security.button.register_passkey')
+                    }}
+                </Button>
+                <Button type="button" variant="ghost" @click="handleCancel">
+                    {{ trans('common.button.cancel') }}
+                </Button>
+            </div>
+        </FieldGroup>
     </form>
 </template>
