@@ -33,7 +33,7 @@ const user = computed(() => page.props.auth.user);
 const form = useForm<ProfileForm>({
     name: user.value.name,
     email: user.value.email,
-});
+}).withPrecognition(update());
 
 const submit = () => {
     form.submit(update());
@@ -66,6 +66,7 @@ const submit = () => {
                         class="mt-1 block w-full"
                         name="name"
                         v-model="form.name"
+                        @blur="form.validate('name')"
                         :aria-invalid="Boolean(form.errors.name)"
                         :aria-describedby="
                             form.errors.name ? 'profile-name-error' : undefined
@@ -96,6 +97,7 @@ const submit = () => {
                         class="mt-1 block w-full"
                         name="email"
                         v-model="form.email"
+                        @blur="form.validate('email')"
                         :aria-invalid="Boolean(form.errors.email)"
                         :aria-describedby="
                             form.errors.email

@@ -24,7 +24,9 @@ import type { DeleteUserForm } from '@/types';
 
 const { trans } = useTrans();
 const passwordInput = useTemplateRef('passwordInput');
-const form = useForm<DeleteUserForm>({ password: '' });
+const form = useForm<DeleteUserForm>({ password: '' }).withPrecognition(
+    destroy(),
+);
 
 const submit = () => {
     form.submit(destroy(), {
@@ -95,6 +97,7 @@ const submit = () => {
                                     id="password"
                                     name="password"
                                     v-model="form.password"
+                                    @blur="form.validate('password')"
                                     :aria-invalid="
                                         Boolean(form.errors.password)
                                     "
