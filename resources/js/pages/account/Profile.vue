@@ -5,7 +5,7 @@ import { useTrans } from '@/composables/useTrans';
 import { useForm, Head, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { update } from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { update } from '@/actions/App/Http/Controllers/Account/ProfileController';
 import DeleteUser from '@/components/DeleteUser.vue';
 import AvatarUploader from '@/components/AvatarUploader.vue';
 import type { UploadedFile } from '@/types/uploads';

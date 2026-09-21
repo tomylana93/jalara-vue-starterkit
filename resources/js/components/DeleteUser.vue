@@ -4,7 +4,7 @@ import { useTrans } from '@/composables/useTrans';
 
 import { useForm } from '@inertiajs/vue3';
 import { useTemplateRef } from 'vue';
-import { destroy } from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { destroy } from '@/actions/App/Http/Controllers/Account/ProfileController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';

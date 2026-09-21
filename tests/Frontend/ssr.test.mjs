@@ -43,8 +43,8 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                 'authentication.heading.authentication_code',
             ],
             ['Dashboard', 'navigation.label.dashboard'],
-            ['settings/Profile', 'profile.heading.settings'],
-            ['settings/Security', 'security.heading.update_password'],
+            ['account/Profile', 'profile.heading.settings'],
+            ['account/Security', 'security.heading.update_password'],
         ]) {
             const result = await render({
                 component,
@@ -69,7 +69,7 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                     canManagePasskeys: true,
                     passkeys: [],
                     avatarMedia:
-                        component === 'settings/Profile'
+                        component === 'account/Profile'
                             ? {
                                   id: '1',
                                   name: 'saved-avatar.png',
@@ -146,7 +146,7 @@ void test('production SSR renders localized layouts and keeps consecutive reques
                 assert.match(input, /\binputmode="email"/, component);
             }
 
-            if (component === 'settings/Profile') {
+            if (component === 'account/Profile') {
                 assert.ok(result.body.includes('value="Test User"'));
                 assert.ok(result.body.includes('value="test@example.com"'));
                 assert.ok(result.body.includes('saved-avatar.png'));

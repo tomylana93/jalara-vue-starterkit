@@ -3,7 +3,7 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { useTrans } from '@/composables/useTrans';
 
 import { useForm, Head } from '@inertiajs/vue3';
-import { update } from '@/actions/App/Http/Controllers/Settings/SecurityController';
+import { update } from '@/actions/App/Http/Controllers/Account/SecurityController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
