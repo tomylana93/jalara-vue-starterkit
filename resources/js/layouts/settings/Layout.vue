@@ -8,6 +8,7 @@ import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { useTrans } from '@/composables/useTrans';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editGeneralSettings } from '@/routes/settings/general';
+import { edit as editBrandSettings } from '@/routes/settings/brand';
 import type { NavItem } from '@/types';
 
 const { trans } = useTrans();
@@ -15,6 +16,10 @@ const sidebarNavItems = computed<NavItem[]>(() => [
     {
         title: trans('navigation.label.general'),
         href: editGeneralSettings(),
+    },
+    {
+        title: trans('navigation.label.brand'),
+        href: editBrandSettings(),
     },
 ]);
 

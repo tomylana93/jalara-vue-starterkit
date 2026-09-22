@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { Brand } from '@/types/brand';
 import type { Localization } from '@/types';
 
 // Extend ImportMeta interface for Vite...
@@ -20,6 +21,7 @@ declare module '@inertiajs/core' {
             localization: Localization;
             name: string;
             auth: Auth;
+            brand?: Brand;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };
