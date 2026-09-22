@@ -1,4 +1,5 @@
 import { createInertiaApp, router } from '@inertiajs/vue3';
+import 'vue-sonner/style.css';
 import { createAppI18n, resolveLocalization } from '@/lib/i18n';
 import { initializeTheme } from '@/composables/useAppearance';
 import AppLayout from '@/layouts/AppLayout.vue';
