@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import { update } from '@/actions/App/Http/Controllers/Settings/GeneralSettingsController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -12,6 +13,7 @@ import {
 } from '@/components/ui/native-select';
 import { Textarea } from '@/components/ui/textarea';
 import { useTrans } from '@/composables/useTrans';
+import { resolveLocalization } from '@/lib/i18n';
 import { edit } from '@/routes/settings/general';
 import type { GeneralSettingsForm } from '@/types';
 
@@ -22,6 +24,7 @@ const props = defineProps<{
 }>();
 
 const { trans } = useTrans();
+const { locale, fallbackLocale } = useI18n({ useScope: 'global' });
 defineOptions({
     layout: {
         breadcrumbKeys: [
@@ -40,7 +43,14 @@ const form = useForm<GeneralSettingsForm>({
 const submit = () => {
     form.submit(update(), {
         preserveScroll: true,
-        onSuccess: () => form.defaults(),
+        onSuccess: (page) => {
+            const localization = resolveLocalization(page.props.localization);
+
+            locale.value = localization.locale;
+            fallbackLocale.value = localization.fallbackLocale;
+            document.documentElement.lang = localization.locale;
+            form.defaults();
+        },
     });
 };
 </script>
